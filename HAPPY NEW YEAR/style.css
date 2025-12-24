@@ -1,0 +1,221 @@
+/* Reset and base layout */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #ffdde1, #ee9ca7 40%, #1b0022 85%);
+  overflow: hidden;
+}
+
+/* App container */
+.app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  color: #3b002f;
+  z-index: 1;
+}
+
+/* Glowing circle trigger (replaces heart) */
+.trigger-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.trigger-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffe7ff, #ff4b8a);
+  box-shadow:
+    0 0 25px rgba(255, 75, 138, 0.9),
+    0 0 60px rgba(255, 75, 138, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transform: scale(1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.trigger-circle::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 0turn,
+    rgba(255,255,255,0.15),
+    rgba(255,255,255,0),
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0)
+  );
+  opacity: 0.8;
+  mix-blend-mode: screen;
+  animation: spinGlow 5s linear infinite;
+}
+
+.trigger-circle.clicked {
+  animation: explode 0.5s forwards;
+}
+
+.trigger-circle-content {
+  position: relative;
+  z-index: 1;
+  color: #3b002f;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.trigger-circle:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 35px rgba(255, 75, 138, 1),
+    0 0 70px rgba(255, 75, 138, 0.9);
+}
+
+/* Hint text */
+.hint {
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: rgba(59, 0, 47, 0.85);
+}
+
+/* Slide-up panel */
+.slide-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateY(100%);
+  background: rgba(10, 0, 25, 0.97);
+  color: #fff;
+  padding: 2rem 1.4rem 2.4rem;
+  border-radius: 26px 26px 0 0;
+  max-width: 620px;
+  margin: 0 auto;
+  box-shadow: 0 -14px 50px rgba(0,0,0,0.88);
+  text-align: center;
+}
+
+/* Visible state – slide up from bottom */
+.slide-panel.visible {
+  animation: slideUpFromBottom 0.85s ease-out forwards;
+}
+
+/* Name line at top of panel */
+.name-line {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffbddb;
+}
+
+/* Sub line */
+.sub-line {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
+}
+
+/* HAPPY NEW YEAR text */
+.newyear-line {
+  margin-top: 1.3rem;
+  font-size: 2.3rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 0 16px rgba(255,255,255,0.9),
+    0 0 26px rgba(255,72,138,0.9);
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* Fade up when visible */
+.newyear-line.visible {
+  animation: fadeUp 0.9s ease forwards;
+}
+
+/* Typewriter text */
+.typewriter {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #ffeaf7;
+  white-space: pre-wrap;
+}
+
+/* Keyframes */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes explode {
+  0% { transform: scale(1); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1.05); }
+}
+
+@keyframes slideUpFromBottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-4%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Rotating glow for circle */
+@keyframes spinGlow {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .slide-panel {
+    padding: 1.6rem 1.1rem 2.1rem;
+  }
+
+  .newyear-line {
+    font-size: 1.8rem;
+  }
+
+  .name-line {
+    font-size: 1.4rem;
+  }
+}

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy New Year ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- React & Babel CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #ffdde1, #ee9ca7 40%, #1b0022 85%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,0.4), transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.2), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: floatGlow 18s ease-in-out infinite alternate;
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-root {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: #3b002f;
+    }
+
+    /* Glowing circle trigger (replaces heart) */
+    .trigger-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .trigger-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffe7ff, #ff4b8a);
+      box-shadow:
+        0 0 25px rgba(255, 75, 138, 0.9),
+        0 0 60px rgba(255, 75, 138, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transform: scale(1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .trigger-circle::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(
+        from 0turn,
+        rgba(255,255,255,0.15),
+        rgba(255,255,255,0),
+        rgba(255,255,255,0.25),
+        rgba(255,255,255,0)
+      );
+      opacity: 0.8;
+      mix-blend-mode: screen;
+      animation: spinGlow 5s linear infinite;
+    }
+
+    .trigger-circle.clicked {
+      animation: explode 0.5s forwards;
+    }
+
+    .trigger-circle-content {
+      position: relative;
+      z-index: 1;
+      color: #3b002f;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .trigger-circle:hover {
+      transform: scale(1.06);
+      box-shadow:
+        0 0 35px rgba(255, 75, 138, 1),
+        0 0 70px rgba(255, 75, 138, 0.9);
+    }
+
+    .hint {
+      margin-top: 0.8rem;
+      font-size: 0.85rem;
+      color: rgba(59, 0, 47, 0.85);
+    }
+
+    /* Slide-up New Year card */
+    .card-panel {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transform: translateY(100%);
+      background: rgba(10, 0, 25, 0.97);
+      color: #fff;
+      padding: 2rem 1.4rem 2.4rem;
+      border-radius: 26px 26px 0 0;
+      max-width: 620px;
+      margin: 0 auto;
+      box-shadow: 0 -14px 50px rgba(0,0,0,0.88);
+      text-align: center;
+    }
+
+    .card-panel.visible {
+      animation: slideUpFromBottom 0.85s ease-out forwards;
+    }
+
+    .name-line {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffbddb;
+    }
+
+    .sub-line {
+      margin-top: 0.35rem;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .newyear-line {
+      margin-top: 1.3rem;
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(255,255,255,0.9),
+                   0 0 26px rgba(255,72,138,0.9);
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    .newyear-line.visible {
+      animation: fadeUp 0.9s ease forwards;
+    }
+
+    .year-line {
+      margin-top: 0.2rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .typewriter {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #ffeaf7;
+      white-space: pre-wrap;
+    }
+
+    .tiny {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Floating confetti-ish dots (simple) */
+    .confetti-dot {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.9;
+      animation: floatUp 5s linear infinite;
+    }
+
+    /* Keyframes */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); }
+      60% { transform: scale(1.25); }
+      100% { transform: scale(1.05); }
+    }
+
+    @keyframes slideUpFromBottom {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      50% {
+        transform: translateY(-4%);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0%);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate3d(0,0,0); }
+      50% { transform: translate3d(30px,-30px,0); }
+      100% { transform: translate3d(0,0,0); }
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(120vh) scale(1);
+      }
+      100% {
+        transform: translateY(-10vh) scale(0.8);
+      }
+    }
+
+    @keyframes spinGlow {
+      to { transform: rotate(1turn); }
+    }
+
+    @media (max-width: 480px) {
+      .card-panel {
+        padding: 1.6rem 1.1rem 2.1rem;
+      }
+      .newyear-line {
+        font-size: 1.8rem;
+      }
+      .name-line {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Simple audio element controlled by React -->
+  <audio id="ny-audio" src="song.mp3" preload="auto"></audio>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function NewYearApp() {
+      // SET HER NAME HERE
+      const herName = "HEY BUDDY"; // change this
+
+      const [clicked, setClicked] = useState(false);
+      const [panelVisible, setPanelVisible] = useState(false);
+      const [showHappy, setShowHappy] = useState(false);
+      const [typed, setTyped] = useState("");
+
+      const year = new Date().getFullYear() + 1;
+      const message =
+        "Thank you for every random call, every dumb joke, and every time you stayed when it really mattered.\n" +
+        "In " + year + ", I just want one thing to stay constant – YOU in my life.\n" +
+        "May this year bring you louder laughs, softer tears, bigger wins, and all the peace your heart deserves.";
+
+      useEffect(() => {
+        // create some simple floating confetti dots
+        const colors = ["#ff9a9e", "#ffd46b", "#b388ff", "#80d8ff", "#ff6bcb"];
+        for (let i = 0; i < 18; i++) {
+          const dot = document.createElement("div");
+          dot.className = "confetti-dot";
+          dot.style.left = Math.random() * 100 + "vw";
+          dot.style.animationDelay = (Math.random() * 5) + "s";
+          dot.style.background = colors[i % colors.length];
+          document.body.appendChild(dot);
+        }
+      }, []);
+
+      const startTypewriter = () => {
+        let index = 0;
+        setTyped("");
+        const id = setInterval(() => {
+          index++;
+          setTyped(message.slice(0, index));
+          if (index >= message.length) {
+            clearInterval(id);
+          }
+        }, 35);
+      };
+
+      const handleClick = async () => {
+        if (clicked) return; // first click only
+        setClicked(true);
+
+        // play audio on user interaction (works across Chrome, Safari, Firefox, Brave)
+        const audio = document.getElementById("ny-audio");
+        if (audio) {
+          try {
+            audio.currentTime = 0;
+            await audio.play();
+          } catch (e) {
+            alert("If the music didn't play, tap the screen once and then tap the circle again.");
+            setClicked(false);
+            return;
+          }
+        }
+
+        // slide card from bottom
+        setPanelVisible(true);
+
+        // show HAPPY NEW YEAR
+        setTimeout(() => setShowHappy(true), 500);
+
+        // start typing message
+        setTimeout(() => startTypewriter(), 850);
+      };
+
+      return (
+        <div className="app-root">
+          {/* Glowing circle trigger instead of heart */}
+          <div className="trigger-wrapper">
+            <div
+              className={"trigger-circle" + (clicked ? " clicked" : "")}
+              onClick={handleClick}
+            >
+              <div className="trigger-circle-content">
+                TAP<br />ME
+              </div>
+            </div>
+          </div>
+
+          {!clicked && (
+            <p className="hint">
+              Tap the glowing circle when you are ready for your New Year surprise.
+            </p>
+          )}
+
+          <div className={"card-panel" + (panelVisible ? " visible" : "")}>
+            {panelVisible && (
+              <>
+                <div className="name-line">{herName}</div>
+                <div className="sub-line">
+                  this whole New Year moment on the screen was made only for you 💗
+                </div>
+
+                <div className={"newyear-line" + (showHappy ? " visible" : "")}>
+                  {showHappy && "HAPPY NEW YEAR"}
+                </div>
+                <div className="year-line">{year}</div>
+
+                <div className="typewriter">{typed}</div>
+
+                <div className="tiny">
+                  If you ever feel low this year, open this again and remember the fun we did last year! 😊
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<NewYearApp />);
+  </script>
+</body>
+</html>
